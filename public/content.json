@@ -1,0 +1,157 @@
+{
+  "_uitleg": "Vaste informatie die geen gratis bron automatisch levert. Pas dit bestand aan op GitHub om iets te wijzigen; Netlify zet het daarna vanzelf online. Data onder 'fallback' wordt alleen getoond als de live gegevens niet bereikbaar zijn.",
+  "snapshotLabel": "zo 8 nov 2026, 10:00",
+
+  "matchInfo": {
+    "2026-11-08": {
+      "tv": "ESPN 1 (Ziggo 18/421, KPN 221, Odido 150) en de ESPN-app",
+      "referee": "Joey Kooij",
+      "stakes": "Twente staat één punt achter Ajax. Met een zege springen de Tukkers over de Amsterdammers heen en jagen ze op een vierde overwinning op rij."
+    },
+    "2026-11-22": { "tv": "ESPN" },
+    "2026-11-26": { "tv": "Zie gids: Conference League" }
+  },
+
+  "lineup": {
+    "date": "2026-11-08",
+    "status": "Verwacht · officiële opstelling rond 13:30",
+    "twente": {
+      "formation": "4-2-3-1",
+      "players": [["16","Drommel",50,90],["28","Van Rooij",82,71],["3","Pröpper",62,77],["4","Nijstad",38,77],["29","Adelgaard",18,71],["6","Zerrouki",38,57],["8","Weidmann",62,57],["11","Rots",82,36],["10","Taha",50,39],["27","Ørjasæter",18,36],["9","Weghorst",50,15]],
+      "note": "Met Unnerstall nog geblesseerd keept Joël Drommel. Zerrouki en Weidmann vormen het controlerende duo, Taha speelt achter Weghorst. Na de 3-1 tegen Pafos meldde Van den Brom dat iedereen fit is."
+    },
+    "opponent": {
+      "formation": "4-3-3",
+      "players": [["1","Ter Stegen",50,90],["2","Rosa",82,71],["6","Kehrer",62,77],["DJ","Janse",38,77],["5","Wijndal",18,71],["18","Klaassen",72,52],["15","Baas",50,58],["24","Mokio",28,52],["68","Ouazane",82,25],["99","Tolu",50,16],["10","Gloukh",18,25]],
+      "note": "Verwachting op basis van de elf die donderdag met 1-6 won bij Midtjylland. Youri Baas staat op het middenveld."
+    }
+  },
+
+  "absent": {
+    "date": "2026-11-08",
+    "twente": [["Lars Unnerstall","Geblesseerd"],["Max Bruns","Geblesseerd"],["Stav Lemkin","Geblesseerd"],["Filip Thorvaldsen","Geblesseerd"]],
+    "opponent": [["Kasper Dolberg","Geblesseerd"],["Simon Adingra","Geblesseerd"],["Viktor Tsygankov","Geblesseerd"],["Sofyan Amrabat","Twijfel"],["Julian Brandt","Twijfel"],["Anton Gaaei","Twijfel"]],
+    "note": "Volgens Míchel zijn Brandt, Caio Henrique en Edvardsen weer beschikbaar en kan Amrabat er waarschijnlijk bij zijn."
+  },
+
+  "opponents": {
+    "Ajax": {
+      "coach": "Míchel Sánchez (sinds juni 2026, ex-Girona)",
+      "style": "4-3-3 met veel balbezit. Opvallend: verdediger Youri Baas als nummer 6.",
+      "danger": "Spits Tolu Arokodare, donderdag twee keer trefzeker in de Conference League.",
+      "link": "Wout Weghorst speelde twee seizoenen voor Ajax (65 duels, 20 goals)."
+    },
+    "Willem II": { "coach": "Adrie Koster (interim, sinds 21 oktober)", "style": "Hekkensluiter, nog zonder overwinning in de competitie." },
+    "NEC": { "style": "Veel gelijke spelen dit seizoen." },
+    "Go Ahead Eagles": { "coach": "Joseph Oosting" },
+    "Sparta Rotterdam": { "coach": "Rogier Meijer" },
+    "Feyenoord": { "coach": "Giovanni van Bronckhorst" }
+  },
+
+  "extraFixtures": [
+    {"id":"uecl-1","date":"2026-10-15T19:00:00Z","status":"FINISHED","comp":"UECL","home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"FC Thun","tla":"THU"},"score":{"h":1,"a":0}},
+    {"id":"uecl-2","date":"2026-10-22T19:00:00Z","status":"FINISHED","comp":"UECL","home":{"short":"Lincoln Red Imps","tla":"LIN"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":1,"a":4}},
+    {"id":"uecl-3","date":"2026-11-05T20:00:00Z","status":"FINISHED","comp":"UECL","home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"Pafos FC","tla":"PAF"},"score":{"h":3,"a":1}},
+    {"id":"uecl-4","date":"2026-11-26T20:00:00Z","status":"TIMED","comp":"UECL","home":{"short":"SC Freiburg","tla":"SCF"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":null,"a":null},"info":"Competitiefase, speeldag 4"},
+    {"id":"bek-2","date":"2026-12-02T19:00:00Z","status":"SCHEDULED","comp":"BEK","home":{"short":"Fortuna Sittard","tla":"FOR"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":null,"a":null},"info":"KNVB Beker, 2e ronde (woensdag)"},
+    {"id":"uecl-5","date":"2026-12-10T20:00:00Z","status":"TIMED","comp":"UECL","home":{"short":"Aarhus GF","tla":"AGF"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":null,"a":null},"info":"Competitiefase, speeldag 5"},
+    {"id":"uecl-6","date":"2026-12-17T20:00:00Z","status":"TIMED","comp":"UECL","home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"Kairat Almaty","tla":"KAI"},"score":{"h":null,"a":null},"info":"Competitiefase, speeldag 6"}
+  ],
+
+  "europe": { "points": 9, "played": 3, "goals": "8–2", "line": "Thun 1-0, Lincoln 1-4, Pafos 3-1", "next": "26/11 uit bij SC Freiburg, 21:00" },
+
+  "squad": {
+    "Keepers":[["1","Lars Unnerstall","GER","out"],["16","Joël Drommel","NED"],["22","Remko Pasveer","NED"],["31","Yannick Gerritsen","NED"]],
+    "Verdedigers":[["2","Michał Rosiak","POL · RB"],["3","Robin Pröpper","NED · CV"],["4","Ruud Nijstad","NED · CV"],["23","Stav Lemkin","ISR · CV","out"],["24","Krzysztof Kurowski","POL · LB"],["28","Bart van Rooij","NED · RB"],["29","Aske Adelgaard","DEN · LB"],["38","Max Bruns","NED · CV","out"]],
+    "Middenvelders":[["6","Ramiz Zerrouki","ALG · CM"],["8","Daouda Weidmann","FRA · CM"],["14","Kristian Hlynsson","ISL · AM"],["18","Jordy Bawuah","BEL · VM"],["20","Thomas van den Belt","NED · VM"],["41","Gijs Besselink","NED · CM"]],
+    "Aanvallers":[["7","Marko Pjaca","CRO · LV"],["9","Wout Weghorst","NED · SP"],["10","Younes Taha","MAR · AM"],["11","Daan Rots","NED · RV"],["17","Filip Thorvaldsen","NOR · RV","out"],["25","Lucas Vennegoor of Hesselink","NED · SP"],["27","Sondre Ørjasæter","NOR · LV"],["37","Naci Ünüvar","TUR · LV"]]
+  },
+
+  "highlights": [
+    ["5","Sondre Ørjasæter","Assists in één duel (0-9 bij Excelsior), uniek deze eeuw"],
+    ["18","Ruud Nijstad","Jaar oud, Talent van de Maand oktober en opgeroepen voor Jong Oranje"]
+  ],
+
+  "club": [
+    ["Opgericht","1965, Enschede"],["Stadion","De Grolsch Veste (ca. 30.000)"],["Hoofdtrainer","John van den Brom"],
+    ["Technisch directeur","Erik ten Hag (sinds dit seizoen)"],["Voorzitter","Dominique Scholten"],
+    ["Clubrecord verkoop","Mats Rots, €16 mln naar Hoffenheim"],["Financiën 2025/26","Nettowinst €7 mln"],["Shirt dit seizoen","Comeback van de Schotse ruit"]
+  ],
+
+  "honours": [
+    ["1×","Landskampioen","2009/10, onder Steve McClaren"],["3×","KNVB Beker","1977, 2001, 2011"],
+    ["2×","Johan Cruijff Schaal","2010, 2011"],["’75","UEFA Cup-finalist","Verloren van Borussia Mönchengladbach"]
+  ],
+
+  "facts": [
+    "Topscorer aller tijden tegen Ajax is Blaise Nkufo met 8 goals, gevolgd door Theo Pahlplatz (7) en Hallvar Thoresen (6).",
+    "De 0-9 bij Excelsior (1 nov 2026) is de grootste competitiezege uit de clubhistorie.",
+    "Weghorst werd daarin de eerste Twente-speler die vier keer scoorde in een uitwedstrijd in de competitie.",
+    "Ørjasæter is de eerste speler deze eeuw met vijf assists in één Eredivisie-duel.",
+    "Weghorst kwam deze zomer transfervrij over van Ajax.",
+    "Erik ten Hag, als speler en trainer al eerder bij Twente actief, is sinds deze zomer technisch directeur."
+  ],
+
+  "women": "Koploper na negen duels: één punt voor Ajax en drie voor PSV. Zondag 15 november wacht de topper tegen PSV in De Grolsch Veste.",
+
+  "fallback": {
+    "matchday": 12,
+    "table": [
+      {"pos":1,"short":"Feyenoord","tla":"FEY","played":11,"won":7,"draw":4,"lost":0,"gf":33,"ga":12,"gd":21,"pts":25},
+      {"pos":2,"short":"Ajax","tla":"AJA","played":11,"won":7,"draw":3,"lost":1,"gf":30,"ga":13,"gd":17,"pts":24},
+      {"pos":3,"short":"PSV","tla":"PSV","played":11,"won":7,"draw":2,"lost":2,"gf":35,"ga":13,"gd":22,"pts":23},
+      {"pos":4,"short":"FC Twente","tla":"TWE","played":11,"won":7,"draw":2,"lost":2,"gf":28,"ga":10,"gd":18,"pts":23},
+      {"pos":5,"short":"AZ","tla":"AZ","played":11,"won":6,"draw":2,"lost":3,"gf":20,"ga":13,"gd":7,"pts":20},
+      {"pos":6,"short":"Fortuna Sittard","tla":"FOR","played":12,"won":5,"draw":5,"lost":2,"gf":20,"ga":20,"gd":0,"pts":20},
+      {"pos":7,"short":"sc Heerenveen","tla":"HEE","played":11,"won":5,"draw":3,"lost":3,"gf":19,"ga":13,"gd":6,"pts":18},
+      {"pos":8,"short":"Go Ahead Eagles","tla":"GAE","played":12,"won":4,"draw":5,"lost":3,"gf":24,"ga":27,"gd":-3,"pts":17},
+      {"pos":9,"short":"FC Groningen","tla":"GRO","played":11,"won":4,"draw":3,"lost":4,"gf":26,"ga":24,"gd":2,"pts":15},
+      {"pos":10,"short":"SC Cambuur","tla":"CAM","played":11,"won":4,"draw":3,"lost":4,"gf":23,"ga":22,"gd":1,"pts":15},
+      {"pos":11,"short":"FC Utrecht","tla":"UTR","played":11,"won":3,"draw":3,"lost":5,"gf":19,"ga":31,"gd":-12,"pts":12},
+      {"pos":12,"short":"Sparta Rotterdam","tla":"SPA","played":12,"won":3,"draw":3,"lost":6,"gf":21,"ga":29,"gd":-8,"pts":12},
+      {"pos":13,"short":"PEC Zwolle","tla":"PEC","played":12,"won":3,"draw":3,"lost":6,"gf":13,"ga":24,"gd":-11,"pts":12},
+      {"pos":14,"short":"NEC","tla":"NEC","played":11,"won":2,"draw":5,"lost":4,"gf":17,"ga":19,"gd":-2,"pts":11},
+      {"pos":15,"short":"Excelsior","tla":"EXC","played":12,"won":3,"draw":2,"lost":7,"gf":16,"ga":29,"gd":-13,"pts":11},
+      {"pos":16,"short":"Telstar","tla":"TEL","played":12,"won":2,"draw":4,"lost":6,"gf":18,"ga":25,"gd":-7,"pts":10},
+      {"pos":17,"short":"ADO Den Haag","tla":"ADO","played":12,"won":2,"draw":3,"lost":7,"gf":16,"ga":25,"gd":-9,"pts":9},
+      {"pos":18,"short":"Willem II","tla":"WIL","played":12,"won":0,"draw":3,"lost":9,"gf":11,"ga":40,"gd":-29,"pts":3}
+    ],
+    "matches": [
+      {"id":"f1","date":"2026-10-10T18:00:00Z","status":"FINISHED","comp":"ERE","home":{"short":"Fortuna Sittard","tla":"FOR"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":1,"a":1}},
+      {"id":"f2","date":"2026-10-18T10:30:00Z","status":"FINISHED","comp":"ERE","home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"FC Utrecht","tla":"UTR"},"score":{"h":1,"a":2}},
+      {"id":"f3","date":"2026-10-25T18:00:00Z","status":"FINISHED","comp":"ERE","home":{"short":"AZ","tla":"AZ"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":0,"a":2}},
+      {"id":"f4","date":"2026-11-01T13:30:00Z","status":"FINISHED","comp":"ERE","home":{"short":"Excelsior","tla":"EXC"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":0,"a":9}},
+      {"id":"f5","date":"2026-11-08T13:30:00Z","status":"TIMED","comp":"ERE","matchday":12,"home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"Ajax","tla":"AJA"},"score":{"h":null,"a":null},"referee":"Joey Kooij"},
+      {"id":"f6","date":"2026-11-22T11:15:00Z","status":"TIMED","comp":"ERE","home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"Willem II","tla":"WIL"},"score":{"h":null,"a":null}},
+      {"id":"f7","date":"2026-11-29T12:00:00Z","status":"SCHEDULED","comp":"ERE","home":{"short":"NEC","tla":"NEC"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":null,"a":null}},
+      {"id":"f8","date":"2026-12-05T12:00:00Z","status":"SCHEDULED","comp":"ERE","home":{"short":"Go Ahead Eagles","tla":"GAE"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":null,"a":null}},
+      {"id":"f9","date":"2026-12-12T12:00:00Z","status":"SCHEDULED","comp":"ERE","home":{"short":"FC Twente","tla":"TWE"},"away":{"short":"Sparta Rotterdam","tla":"SPA"},"score":{"h":null,"a":null}},
+      {"id":"f10","date":"2026-12-19T12:00:00Z","status":"SCHEDULED","comp":"ERE","home":{"short":"Feyenoord","tla":"FEY"},"away":{"short":"FC Twente","tla":"TWE"},"score":{"h":null,"a":null}}
+    ],
+    "opponentRecent": [
+      {"date":"2026-11-05T17:45:00Z","status":"FINISHED","comp":"UECL","home":{"short":"Midtjylland"},"away":{"short":"Ajax"},"score":{"h":1,"a":6}},
+      {"date":"2026-10-31T19:00:00Z","status":"FINISHED","comp":"ERE","home":{"short":"Ajax"},"away":{"short":"AZ"},"score":{"h":1,"a":0}},
+      {"date":"2026-10-25T13:30:00Z","status":"FINISHED","comp":"ERE","home":{"short":"Sparta Rotterdam"},"away":{"short":"Ajax"},"score":{"h":1,"a":2}},
+      {"date":"2026-10-22T19:00:00Z","status":"FINISHED","comp":"UECL","home":{"short":"Ajax"},"away":{"short":"Atalanta"},"score":{"h":2,"a":0}},
+      {"date":"2026-10-18T12:30:00Z","status":"FINISHED","comp":"ERE","home":{"short":"FC Groningen"},"away":{"short":"Ajax"},"score":{"h":2,"a":5}}
+    ],
+    "h2h": {"count":59,"twenteWins":18,"draws":16,"oppWins":25,"matches":[
+      {"date":"2026-04-04T18:00:00Z","status":"FINISHED","home":{"short":"Ajax"},"away":{"short":"FC Twente"},"score":{"h":1,"a":2}},
+      {"date":"2025-10-26T13:30:00Z","status":"FINISHED","home":{"short":"FC Twente"},"away":{"short":"Ajax"},"score":{"h":2,"a":3}},
+      {"date":"2025-05-18T12:30:00Z","status":"FINISHED","home":{"short":"Ajax"},"away":{"short":"FC Twente"},"score":{"h":2,"a":0}},
+      {"date":"2024-11-10T13:30:00Z","status":"FINISHED","home":{"short":"FC Twente"},"away":{"short":"Ajax"},"score":{"h":2,"a":2}},
+      {"date":"2024-04-14T12:30:00Z","status":"FINISHED","home":{"short":"Ajax"},"away":{"short":"FC Twente"},"score":{"h":2,"a":1}}
+    ]},
+    "scorers": [
+      {"name":"Wout Weghorst","team":"FC Twente","twente":true,"goals":8,"assists":0}
+    ],
+    "news": [
+      {"title":"Twente draait 0-1 om en blijft foutloos in Europa (3-1 tegen Pafos)","source":"fctwente.nl","url":"https://fctwente.nl/nieuws/samenvatting-europese-zege-op-pafos-fc","date":"2026-11-06T09:00:00Z"},
+      {"title":"Ruud Nijstad opgeroepen voor Jong Oranje","source":"fctwente.nl","url":"https://fctwente.nl/nieuws/ruud-nijstad-opgeroepen-voor-jong-oranje","date":"2026-11-06T08:00:00Z"},
+      {"title":"Nijstad verkozen tot Johan Cruijff Talent van de Maand oktober","source":"Twente Insite","url":"https://www.twenteinsite.nl/fc-twente-nieuws/nijstad-verkozen-tot-johan-cruijff-talent-van-de-maand-oktober-het-is-heel-snel-gegaan","date":"2026-11-07T09:00:00Z"},
+      {"title":"Beker: Fortuna Sittard – FC Twente op woensdag 2 december","source":"fctwente.nl","url":"https://fctwente.nl/nieuws/2e-ronde-knvb-uit-tegen-fortuna-sittard","date":"2026-11-04T10:00:00Z"},
+      {"title":"Bouw nieuwe FC Twente/Heracles Academie op Veldwijk gestart","source":"fctwente.nl","url":"https://fctwente.nl/nieuws/nieuwbouw-fc-twenteheracles-academie-op-sportpark-veldwijk-gestart","date":"2026-11-06T07:00:00Z"},
+      {"title":"Historisch: 0-9 bij Excelsior, vier goals Weghorst","source":"Eredivisie.nl","url":"https://eredivisie.nl/nieuws/terugblik-speelronde-11/","date":"2026-11-02T08:00:00Z"}
+    ]
+  }
+}

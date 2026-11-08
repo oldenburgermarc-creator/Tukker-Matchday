@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tukkers Matchday</title>
+<meta name="theme-color" content="#8A0A1F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Plan: een clubapp in Twente-rood. Eén luid moment (het scorebord met Schotse ruit), de rest rustig papier/nacht.
+   Layout: app-kolom, tabs boven op desktop, onderin op telefoon; details openen als sheets. */
+:root{
+  --paper:#F4EFEA;
+  --card:#FFFFFF;
+  --ink:#1C1012;
+  --muted:#6F5E60;
+  --line:#E4D8D2;
+  --red:#C8102E;
+  --red-deep:#8A0A1F;
+  --red-soft:#FBE6E9;
+  --win:#1E8A4C;
+  --draw:#9A7B12;
+  --loss:#C8102E;
+  --pitch:#1F5C3A;
+  --pitch-2:#22663F;
+  --display:"Big Shoulders Display","Oswald","Arial Narrow",Impact,sans-serif;
+  --body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --radius:14px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#130B0C; --card:#1E1416; --ink:#F6EEEC; --muted:#B49EA0; --line:#36272A;
+    --red:#E3213D; --red-deep:#9C0E25; --red-soft:#3A1419;
+    --win:#3BBF73; --draw:#D6B03C; --loss:#FF4D63; --pitch:#173F2A; --pitch-2:#1A4630;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#130B0C; --card:#1E1416; --ink:#F6EEEC; --muted:#B49EA0; --line:#36272A;
+  --red:#E3213D; --red-deep:#9C0E25; --red-soft:#3A1419;
+  --win:#3BBF73; --draw:#D6B03C; --loss:#FF4D63; --pitch:#173F2A; --pitch-2:#1A4630;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+h1,h2,h3{text-wrap:balance;margin:0}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:30;background:var(--red-deep);color:#fff}
+.top-in{max-width:1080px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none}
+.mark-badge{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--red-deep);display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:14px;letter-spacing:.02em}
+.mark-txt{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.mark-txt small{display:block;font-family:var(--body);font-weight:600;font-size:10.5px;letter-spacing:.16em;opacity:.75}
+.top-spacer{flex:1}
+.updated{font-size:12px;opacity:.8;text-align:right}
+
+/* ---------- nav ---------- */
+.nav{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:54px;z-index:25}
+.nav-in{max-width:1080px;margin:0 auto;padding:0 8px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-in::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:none;cursor:pointer;padding:14px 14px 12px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tab svg{width:18px;height:18px;flex:none}
+.tab[aria-selected="true"]{color:var(--red);border-bottom-color:var(--red)}
+.tab:hover{color:var(--ink)}
+@media (max-width:720px){
+  .nav{position:fixed;top:auto;bottom:0;left:0;right:0;border-top:1px solid var(--line);border-bottom:0;padding-bottom:env(safe-area-inset-bottom)}
+  .nav-in{justify-content:space-between;padding:0 4px}
+  .tab{flex-direction:column;gap:3px;padding:9px 4px 8px;font-size:10.5px;flex:1;border-bottom:0;border-top:3px solid transparent}
+  .tab svg{width:21px;height:21px}
+  .tab[aria-selected="true"]{border-top-color:var(--red)}
+  main{padding-bottom:90px}
+}
+
+main{max-width:1080px;margin:0 auto;padding:18px 16px 40px}
+.view{display:none}
+.view.on{display:block}
+.view-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:6px 0 16px;flex-wrap:wrap}
+.view-title{font-family:var(--display);font-weight:900;font-size:40px;line-height:.95;text-transform:uppercase;letter-spacing:.01em}
+.view-sub{color:var(--muted);font-size:13.5px;max-width:60ch}
+.section-label{font-family:var(--display);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.04em;margin:28px 0 12px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:"";flex:1;height:2px;background:var(--line)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+
+/* ---------- hero scoreboard ---------- */
+.hero{position:relative;overflow:hidden;border-radius:20px;color:#fff;background:var(--red);isolation:isolate}
+.hero::before{ /* Schotse ruit */
+  content:"";position:absolute;inset:0;z-index:-1;opacity:.55;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.18) 0 22px, transparent 22px 64px, rgba(255,255,255,.10) 64px 66px, transparent 66px 96px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 22px, transparent 22px 64px, rgba(255,255,255,.10) 64px 66px, transparent 66px 96px),
+    linear-gradient(160deg,#D3112F 0%,#A50C24 70%,#7E0819 100%);
+}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.18),transparent 60%)}
+.hero-in{padding:22px 22px 20px;display:grid;gap:18px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.16);backdrop-filter:blur(2px)}
+.pill.solid{background:#fff;color:var(--red-deep)}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:#fff}
+.pill.live .dot{background:#FFD24A;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.board{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.team{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.crest{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:24px;letter-spacing:.02em;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.crest.twe{background:#fff;color:var(--red)}
+.crest.aja{background:linear-gradient(90deg,#fff 0 33%,#D2122E 33% 67%,#fff 67%);color:#1C1012}
+.crest.aja span{background:#fff;padding:0 4px;border-radius:4px}
+.team-name{font-family:var(--display);font-weight:900;font-size:44px;line-height:.9;text-transform:uppercase}
+.team-pos{font-size:12px;font-weight:600;opacity:.85}
+.vs{display:flex;flex-direction:column;align-items:center;gap:6px}
+.vs-time{font-family:var(--display);font-weight:900;font-size:64px;line-height:.85}
+.vs-day{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+.count{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.cbox{min-width:72px;padding:8px 10px 6px;border-radius:12px;background:rgba(0,0,0,.24);text-align:center}
+.cbox b{display:block;font-family:var(--display);font-weight:800;font-size:36px;line-height:1}
+.cbox span{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.count-note{text-align:center;font-weight:600;font-size:14px}
+.stakes{background:rgba(0,0,0,.22);border-radius:12px;padding:10px 14px;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.stakes strong{font-family:var(--display);font-size:18px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+@media (max-width:560px){
+  .team-name{font-size:30px}
+  .crest{width:58px;height:58px;font-size:19px}
+  .vs-time{font-size:46px}
+  .cbox{min-width:60px}
+  .cbox b{font-size:28px}
+  .hero-in{padding:18px 14px}
+}
+
+/* ---------- tiles to click through ---------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px}
+.tile{appearance:none;text-align:left;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:grid;gap:6px;position:relative;transition:transform .15s ease,border-color .15s ease}
+.tile:hover{transform:translateY(-2px);border-color:var(--red)}
+.tile-k{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+.tile-t{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05;text-transform:uppercase}
+.tile-d{font-size:13.5px;color:var(--muted)}
+.tile-arrow{position:absolute;right:14px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--red-soft);color:var(--red);display:grid;place-items:center;font-weight:800}
+.tile.feature{grid-column:span 2;background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tile.feature .tile-d{color:color-mix(in srgb,var(--paper) 70%,transparent)}
+.tile.feature .tile-k{color:#FF8A99}
+@media (max-width:520px){.tile.feature{grid-column:span 1}}
+
+.mini-pitch{height:86px;border-radius:10px;margin-top:6px;background:repeating-linear-gradient(90deg,var(--pitch) 0 24px,var(--pitch-2) 24px 48px);position:relative;overflow:hidden}
+.mini-pitch i{position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--red);transform:translate(-50%,-50%)}
+
+/* ---------- compare bars ---------- */
+.compare{padding:16px;display:grid;gap:12px}
+.cmp-row{display:grid;grid-template-columns:46px 1fr auto 1fr 46px;align-items:center;gap:10px;font-size:13.5px}
+.cmp-row .l{text-align:right;font-weight:800}
+.cmp-row .r{font-weight:800}
+.cmp-label{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;min-width:96px}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;display:flex}
+.bar.left{justify-content:flex-end}
+.bar b{display:block;height:100%;border-radius:99px}
+.bar.left b{background:var(--red)}
+.bar.right b{background:var(--muted)}
+.cmp-head{display:grid;grid-template-columns:1fr auto 1fr;font-family:var(--display);font-weight:800;font-size:18px;text-transform:uppercase}
+.cmp-head span:last-child{text-align:right}
+
+/* ---------- prediction ---------- */
+.predict{padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.pred-score{display:flex;align-items:center;gap:10px}
+.stepper{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stepper button{width:34px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-weight:800}
+.stepper button:hover{border-color:var(--red);color:var(--red)}
+.stepper output{font-family:var(--display);font-weight:900;font-size:44px;line-height:1;min-width:34px;text-align:center}
+.pred-dash{font-family:var(--display);font-size:36px;font-weight:800;color:var(--muted)}
+.pred-txt{font-size:13.5px;color:var(--muted);max-width:40ch}
+.pred-txt b{color:var(--ink)}
+
+/* ---------- form chips ---------- */
+.form{display:flex;gap:5px}
+.fchip{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-size:11.5px;font-weight:800;color:#fff}
+.fchip.W{background:var(--win)}.fchip.G{background:var(--draw)}.fchip.V{background:var(--loss)}
+
+/* ---------- lists ---------- */
+.list{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 14px}
+.date-box{width:54px;text-align:center;border-right:1px solid var(--line);padding-right:12px}
+.date-box b{display:block;font-family:var(--display);font-weight:900;font-size:28px;line-height:.9}
+.date-box span{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fx-teams{font-weight:700;font-size:15px}
+.fx-teams .us{color:var(--red)}
+.fx-meta{font-size:12.5px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.comp{font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:2px 7px;border-radius:5px;border:1px solid currentColor}
+.comp.ERE{color:var(--red)}
+.comp.UECL{color:#2E7D5B}
+.comp.BEK{color:#B3741A}
+.score{font-family:var(--display);font-weight:900;font-size:26px;padding:2px 10px;border-radius:8px;white-space:nowrap}
+.score.W{background:color-mix(in srgb,var(--win) 16%,transparent);color:var(--win)}
+.score.G{background:color-mix(in srgb,var(--draw) 18%,transparent);color:var(--draw)}
+.score.V{background:color-mix(in srgb,var(--loss) 14%,transparent);color:var(--loss)}
+.kick{font-family:var(--display);font-weight:800;font-size:22px;color:var(--muted)}
+.row.next{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset}
+.tbc{font-size:11px;font-weight:700;color:var(--muted);font-style:italic}
+
+/* ---------- news ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{appearance:none;cursor:pointer;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.news{display:flex;flex-direction:column;gap:8px;padding:16px;text-decoration:none;transition:border-color .15s}
+.news:hover{border-color:var(--red)}
+.news-top{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);font-weight:600}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:5px;background:var(--red-soft);color:var(--red)}
+.tag.Gerucht{background:color-mix(in srgb,var(--draw) 18%,transparent);color:var(--draw)}
+.tag.Officieel{background:var(--red);color:#fff}
+.tag.Vrouwen{background:color-mix(in srgb,#7A4FBF 18%,transparent);color:#8D63D6}
+.news h3{font-size:17px;line-height:1.3;font-weight:800}
+.news p{margin:0;font-size:14px;color:var(--muted)}
+.news-src{margin-top:auto;font-size:12.5px;font-weight:700;color:var(--red)}
+.news.lead{grid-column:1/-1;background:var(--ink);color:var(--paper);border-color:var(--ink);padding:22px}
+.news.lead h3{font-family:var(--display);font-size:34px;line-height:1;text-transform:uppercase;font-weight:900}
+.news.lead p,.news.lead .news-top{color:color-mix(in srgb,var(--paper) 72%,transparent)}
+.news.lead .news-src{color:#FF8A99}
+
+/* ---------- table ---------- */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800;text-align:right;padding:10px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:nth-child(2),td:nth-child(2){text-align:left}
+td.pos{width:44px;text-align:left;font-weight:800;position:relative;padding-left:14px}
+td.pos::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:4px;border-radius:3px;background:var(--z,transparent)}
+td.pts{font-weight:900;font-family:var(--display);font-size:18px}
+tr.us td{background:var(--red-soft);font-weight:800}
+tr.us td:nth-child(2){color:var(--red)}
+tr.opp td:nth-child(2)::after{content:"vandaag";margin-left:8px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:1px 6px;border-radius:4px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:12px 14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+@media (max-width:560px){.hide-s{display:none}}
+
+/* ---------- stat tiles ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.stat{padding:16px}
+.stat b{display:block;font-family:var(--display);font-weight:900;font-size:52px;line-height:.9;color:var(--red)}
+.stat span{font-weight:800;font-size:14px;display:block;margin-top:6px}
+.stat small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+
+/* ---------- squad ---------- */
+.squad{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.player{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:12px;padding:10px 12px}
+.shirt{font-family:var(--display);font-weight:900;font-size:34px;line-height:1;color:var(--red);text-align:center}
+.p-name{font-weight:800;font-size:15px;line-height:1.2}
+.p-meta{font-size:12px;color:var(--muted)}
+.inj{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--loss);padding:3px 7px;border-radius:5px}
+.player.out{opacity:.72}
+.player.xi .shirt{background:var(--red);color:#fff;border-radius:10px;padding:6px 0}
+
+/* ---------- club ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.prose{padding:18px}
+.prose p{margin:0 0 10px;max-width:65ch}
+.honours{display:grid;gap:10px;padding:16px}
+.honour{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center}
+.honour b{font-family:var(--display);font-weight:900;font-size:40px;line-height:1;color:var(--red);text-align:center}
+.honour div{font-weight:700}
+.honour small{display:block;color:var(--muted);font-weight:500}
+.facts{list-style:none;margin:0;padding:6px 16px}
+.facts li{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:28px 1fr;gap:10px}
+.facts li:last-child{border-bottom:0}
+.facts li::before{content:counter(f);counter-increment:f;font-family:var(--display);font-weight:900;font-size:22px;color:var(--red);line-height:1.1}
+.facts{counter-reset:f}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;padding:16px;font-size:14px}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0;font-weight:700}
+.sources{font-size:12.5px;color:var(--muted);padding:16px;display:grid;gap:4px}
+.sources a{color:var(--red);font-weight:700}
+
+/* ---------- sheet ---------- */
+.scrim{position:fixed;inset:0;background:rgba(10,4,5,.55);z-index:60;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;z-index:70;left:50%;bottom:0;transform:translate(-50%,0);width:min(760px,100%);max-height:92%;overflow:auto;background:var(--paper);border-radius:22px 22px 0 0;display:none;box-shadow:0 -10px 40px rgba(0,0,0,.3);padding-bottom:env(safe-area-inset-bottom)}
+.sheet.on{display:block;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translate(-50%,40px)}to{transform:translate(-50%,0)}}
+.sheet-head{position:sticky;top:0;z-index:2;background:var(--red-deep);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px}
+.sheet-head h2{font-family:var(--display);font-weight:900;font-size:28px;text-transform:uppercase;line-height:1;flex:1}
+.sheet-head small{display:block;font-family:var(--body);font-size:12px;font-weight:600;opacity:.8;text-transform:none;letter-spacing:0;margin-top:4px}
+.x{appearance:none;border:0;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;cursor:pointer;font-size:20px;font-weight:700}
+.sheet-body{padding:18px;display:grid;gap:16px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{appearance:none;border:0;background:none;padding:7px 16px;border-radius:999px;font-weight:800;font-size:13px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--red);color:#fff}
+.pitch{position:relative;aspect-ratio:68/88;max-height:560px;margin:0 auto;width:100%;max-width:440px;border-radius:14px;overflow:hidden;background:repeating-linear-gradient(0deg,var(--pitch) 0 11%,var(--pitch-2) 11% 22%)}
+.pitch svg.lines{position:absolute;inset:0;width:100%;height:100%}
+.pl{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;width:84px;text-align:center}
+.pl i{font-style:normal;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:17px;background:#fff;color:var(--red);border:3px solid var(--red);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.pitch.aja .pl i{background:#fff;color:#1C1012;border-color:#fff;box-shadow:0 0 0 3px #D2122E,0 3px 8px rgba(0,0,0,.35)}
+.pl span{font-size:11.5px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);line-height:1.1}
+.formation{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.formation b{font-family:var(--display);font-size:28px;font-weight:900}
+.note{font-size:13px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:10px 12px}
+.absent{display:grid;gap:8px}
+.absent div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;font-size:14px}
+.absent em{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:5px}
+.absent em.o{background:var(--loss);color:#fff}
+.absent em.d{background:color-mix(in srgb,var(--draw) 22%,transparent);color:var(--draw)}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important}
+}
+
+/* ---------- netlify-versie ---------- */
+.updated{appearance:none;border:0;background:none;color:#fff;cursor:pointer;font:inherit;font-size:12px;text-align:right;opacity:.9}
+.updated:hover{opacity:1;text-decoration:underline}
+.banner{background:color-mix(in srgb,var(--draw) 22%,var(--card));color:var(--ink);font-size:13px;font-weight:600;padding:9px 16px;text-align:center;border-bottom:1px solid var(--line)}
+.crest.opp{background:#fff;color:#1C1012}
+.live-score{font-family:var(--display);font-weight:900;font-size:72px;line-height:1;text-align:center}
+.count{flex-direction:row}
+.count .count-note,.count .live-score{flex-basis:100%}
+.lnk{color:var(--red);font-weight:700}
+.scorers{list-style:none;margin:0;padding:6px 16px;counter-reset:s}
+.scorers li{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.scorers li:last-child{border-bottom:0}
+.scorers li::before{content:counter(s);counter-increment:s;font-family:var(--display);font-weight:900;font-size:20px;color:var(--muted)}
+.scorers li span small{display:block;color:var(--muted);font-size:12px}
+.scorers li > b{font-family:var(--display);font-weight:900;font-size:26px}
+.scorers li.us b,.scorers li.us::before{color:var(--red)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="mark" href="#wedstrijd" aria-label="Tukkers Matchday, naar de wedstrijd">
+      <span class="mark-badge" aria-hidden="true">FCT</span>
+      <span class="mark-txt">Tukkers Matchday<small>Eén club, één Veste</small></span>
+    </a>
+    <span class="top-spacer"></span>
+    <button class="updated" id="refresh" type="button" title="Nu verversen">Bijgewerkt<br><b id="updated">laden…</b></button>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Onderdelen">
+  <div class="nav-in" role="tablist">
+    <button class="tab" role="tab" data-view="wedstrijd" id="tab-wedstrijd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/></svg>Wedstrijd</button>
+    <button class="tab" role="tab" data-view="nieuws" id="tab-nieuws"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>Nieuws</button>
+    <button class="tab" role="tab" data-view="programma" id="tab-programma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Programma</button>
+    <button class="tab" role="tab" data-view="stand" id="tab-stand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Stand</button>
+    <button class="tab" role="tab" data-view="selectie" id="tab-selectie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3l-5 3 2 4 2-1v12h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg>Selectie</button>
+    <button class="tab" role="tab" data-view="club" id="tab-club"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16.6 6.5 19.5l1-6.3L3 8.9 9 8z"/></svg>Club &amp; fans</button>
+  </div>
+</nav>
+
+<div class="banner" id="banner" hidden></div>
+
+<main>
+<section class="view" id="view-wedstrijd" role="tabpanel" aria-labelledby="tab-wedstrijd">
+  <div class="hero">
+    <div class="hero-in">
+      <div class="hero-meta" id="hero-meta"></div>
+      <div class="board">
+        <div class="team"><div class="crest twe" id="h-crest" aria-hidden="true">FCT</div><div class="team-name" id="h-name">Twente</div><div class="team-pos" id="h-pos"></div></div>
+        <div class="vs"><div class="vs-day" id="k-day"></div><div class="vs-time num" id="k-time">--:--</div><div class="vs-day" id="k-label">Aftrap</div></div>
+        <div class="team"><div class="crest opp" id="a-crest" aria-hidden="true">---</div><div class="team-name" id="a-name">…</div><div class="team-pos" id="a-pos"></div></div>
+      </div>
+      <div class="count num" id="count" aria-live="polite"></div>
+      <div class="stakes"><strong>Inzet</strong><span id="stakes"></span></div>
+    </div>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div id="compare-wrap"></div>
+  <h2 class="section-label">Jouw voorspelling</h2>
+  <div class="card predict">
+    <div class="pred-score">
+      <div class="stepper"><button type="button" data-p="h" data-d="1" aria-label="Thuisploeg één goal meer">+</button><output id="p-h" class="num">2</output><button type="button" data-p="h" data-d="-1" aria-label="Thuisploeg één goal minder">−</button></div>
+      <span class="pred-dash">–</span>
+      <div class="stepper"><button type="button" data-p="a" data-d="1" aria-label="Uitploeg één goal meer">+</button><output id="p-a" class="num">1</output><button type="button" data-p="a" data-d="-1" aria-label="Uitploeg één goal minder">−</button></div>
+    </div>
+    <p class="pred-txt" id="pred-txt"></p>
+  </div>
+</section>
+
+<section class="view" id="view-nieuws" role="tabpanel" aria-labelledby="tab-nieuws">
+  <div class="view-head"><div><h1 class="view-title">Laatste nieuws</h1><p class="view-sub">Elke 30 minuten automatisch verzameld uit Nederlandse nieuwsbronnen. Tik op een bericht om het bij de bron te lezen.</p></div></div>
+  <div class="filters" id="filters"></div>
+  <div class="news-grid" id="news"></div>
+</section>
+
+<section class="view" id="view-programma" role="tabpanel" aria-labelledby="tab-programma">
+  <div class="view-head"><div><h1 class="view-title">Programma</h1><p class="view-sub">Eredivisie wordt automatisch bijgewerkt. Europese en bekerwedstrijden staan in content.json. Tijden met een sterretje liggen nog niet vast.</p></div></div>
+  <h2 class="section-label">Komende wedstrijden</h2>
+  <div class="list" id="upcoming"></div>
+  <h2 class="section-label">Gespeeld</h2>
+  <div class="list" id="played"></div>
+</section>
+
+<section class="view" id="view-stand" role="tabpanel" aria-labelledby="tab-stand">
+  <div class="view-head"><div><h1 class="view-title">Stand</h1><p class="view-sub" id="stand-sub">Eredivisie.</p></div></div>
+  <div class="card">
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Club</th><th>GS</th><th class="hide-s">W</th><th class="hide-s">G</th><th class="hide-s">V</th><th>Doelp.</th><th>+/−</th><th>Pt</th></tr></thead>
+      <tbody id="table"></tbody>
+    </table></div>
+    <div class="legend">
+      <span><i style="background:var(--red)"></i>Champions League</span>
+      <span><i style="background:#2E7D5B"></i>Europees ticket / play-offs</span>
+      <span><i style="background:var(--draw)"></i>Play-offs degradatie</span>
+      <span><i style="background:#555"></i>Degradatie</span>
+    </div>
+  </div>
+  <h2 class="section-label">Topscorers Eredivisie</h2>
+  <div class="card"><ol class="scorers" id="scorers"></ol></div>
+  <h2 class="section-label">Conference League</h2>
+  <div class="stats" id="europe"></div>
+</section>
+
+<section class="view" id="view-selectie" role="tabpanel" aria-labelledby="tab-selectie">
+  <div class="view-head"><div><h1 class="view-title">Selectie</h1><p class="view-sub">Trainer John van den Brom. Een rood rugnummer betekent: in de verwachte basiself voor de volgende wedstrijd.</p></div></div>
+  <div class="stats" id="sel-stats"></div>
+  <div id="squad"></div>
+</section>
+
+<section class="view" id="view-club" role="tabpanel" aria-labelledby="tab-club">
+  <div class="view-head"><div><h1 class="view-title">Club &amp; fans</h1><p class="view-sub">Erelijst, weetjes voor in het vak en alles rond een thuiswedstrijd.</p></div></div>
+  <div class="two">
+    <div class="card"><h2 class="section-label" style="margin:16px 16px 0">Erelijst</h2><div class="honours" id="honours"></div></div>
+    <div class="card"><h2 class="section-label" style="margin:16px 16px 0">De club nu</h2><dl class="kv" id="clubkv"></dl></div>
+  </div>
+  <h2 class="section-label">Weetjes voor in het vak</h2>
+  <div class="card"><ol class="facts" id="facts"></ol></div>
+  <h2 class="section-label">FC Twente Vrouwen</h2>
+  <div class="card prose"><p id="women"></p></div>
+  <h2 class="section-label">Naar de Veste</h2>
+  <div class="two">
+    <div class="card prose">
+      <p><b>Kaarten</b> voor losse duels, de kaartenmarkt en mindervalidenplaatsen regel je via <a class="lnk" href="https://kaartverkoop.fctwente.nl">kaartverkoop.fctwente.nl</a>.</p>
+      <p><b>Supportersverenigingen:</b> Vak-P, De Vriendenkring en Young Reds. Route, parkeren en huisregels staan op <a class="lnk" href="https://fctwente.nl">fctwente.nl</a>.</p>
+    </div>
+    <div class="card sources">
+      <b style="color:var(--ink)">Waar komen de gegevens vandaan?</b>
+      <span>Stand, wedstrijden, topscorers en onderlinge duels: <a href="https://www.football-data.org">football-data.org</a> (gratis versie, uitslagen tijdens wedstrijden met vertraging).</span>
+      <span>Nieuws: Google Nieuws en NOS Sport, gefilterd op FC Twente.</span>
+      <span>Opstelling, blessures, Europese duels en clubinfo: handmatig in content.json.</span>
+      <span>Alles wordt maximaal elke 30 minuten ververst.</span>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-head"><h2 id="sheet-title">Titel</h2><button class="x" id="sheet-x" aria-label="Sluiten">×</button></div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
+
+<script>
+"use strict";
+const REFRESH_MS = 30 * 60 * 1000;
+const TZ = 'Europe/Amsterdam';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store = {get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const COMP = {ERE:'Eredivisie',UECL:'Conference League',BEK:'KNVB Beker',CL:'Champions League',EL:'Europa League'};
+const isTW = t => /twente/i.test((t && (t.short || t.name)) || '');
+const disp = s => String(s || '').replace(/\s*'65$/, '').replace(/^(FC|AFC|SC|sc|SBV)\s+/, '');
+const norm = s => disp(s).toLowerCase().replace(/[^a-z]/g, '');
+const fmt = (d, o) => new Intl.DateTimeFormat('nl-NL', {timeZone: TZ, ...o}).format(new Date(d));
+const dayKey = d => new Intl.DateTimeFormat('en-CA', {timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date(d));
+const pad = n => String(n).padStart(2, '0');
+const tmName = t => t.short || t.name || '';
+
+let C = null, L = null, stale = [], lastLoad = 0, timer = null, nf = 'Alles';
+
+/* ---------- laden ---------- */
+async function load() {
+  try { if (!C) C = await fetch('content.json', {cache: 'no-cache'}).then(r => r.json()); }
+  catch (e) { $('#updated').textContent = 'fout'; return; }
+  let live = null;
+  try {
+    const r = await fetch('/api/live', {cache: 'no-cache'});
+    if (r.ok) live = await r.json();
+  } catch (e) {}
+  const F = C.fallback; stale = [];
+  L = {
+    updatedAt: live?.updatedAt || null,
+    matchday: live?.matchday ?? F.matchday,
+    table: live?.table || (stale.push('stand'), F.table),
+    matches: live?.matches || (stale.push('wedstrijden'), F.matches),
+    scorers: live?.scorers || (stale.push('topscorers'), F.scorers),
+    news: (live?.news && live.news.length) ? live.news : (stale.push('nieuws'), F.news),
+    next: live?.next || null, opponent: live?.opponent || null, h2h: live?.h2h || null,
+    errors: live?.errors || ['live gegevens niet bereikbaar']
+  };
+  if (!live?.matches) { // momentopname gebruiken voor tegenstander en onderling
+    L.next = F.matches.find(m => m.id === 'f5');
+    L.opponent = {short: 'Ajax', tla: 'AJA', recent: F.opponentRecent};
+    L.h2h = F.h2h;
+  }
+  lastLoad = Date.now();
+  render();
+}
+
+/* ---------- afleidingen ---------- */
+function fixtures() {
+  return [...L.matches, ...(C.extraFixtures || [])].sort((a, b) => a.date.localeCompare(b.date));
+}
+function isLive(m) { return m.status === 'IN_PLAY' || m.status === 'PAUSED'; }
+function upcoming() {
+  const now = Date.now();
+  return fixtures().filter(m => isLive(m) || (m.status !== 'FINISHED' && !['POSTPONED','CANCELLED'].includes(m.status) && new Date(m.date).getTime() > now - 2.5 * 3600e3));
+}
+function played() { return fixtures().filter(m => m.status === 'FINISHED').reverse(); }
+function result(m) {
+  const tHome = isTW(m.home), us = tHome ? m.score.h : m.score.a, them = tHome ? m.score.a : m.score.h;
+  if (us == null) return '';
+  return us > them ? 'W' : us === them ? 'G' : 'V';
+}
+function rowOf(t) {
+  if (!t || !L.table) return null;
+  return L.table.find(r => (t.id && r.id === t.id) || norm(r.short || r.name) === norm(tmName(t))) || null;
+}
+function nextMatch() { return upcoming()[0] || null; }
+function oppOf(m) { return isTW(m.home) ? m.away : m.home; }
+function sameMatch(a, b) { return a && b && (a.id === b.id || (dayKey(a.date) === dayKey(b.date) && norm(tmName(a.home)) === norm(tmName(b.home)))); }
+function lineupFor(m) { return C.lineup && m && C.lineup.date === dayKey(m.date) ? C.lineup : null; }
+function absentFor(m) { return C.absent && m && C.absent.date === dayKey(m.date) ? C.absent : null; }
+function oppNotes(m) { const n = disp(tmName(oppOf(m))); const o = C.opponents || {}; return o[n] || o[tmName(oppOf(m))] || Object.entries(o).find(([k]) => norm(k) === norm(n))?.[1] || null; }
+function teamLine(t) { return t.replace(/FC Twente|Twente/, '<span class="us">$&</span>'); }
+function crestText(t) { return (t.tla || disp(tmName(t)).slice(0, 3)).toUpperCase(); }
+
+/* ---------- render ---------- */
+function render() {
+  $('#updated').textContent = L.updatedAt ? fmt(L.updatedAt, {hour:'2-digit', minute:'2-digit'}) : C.snapshotLabel;
+  const b = $('#banner');
+  if (stale.length) { b.hidden = false; b.textContent = `Live gegevens zijn nu niet bereikbaar. Je ziet de ${stale.join(', ')} van ${C.snapshotLabel}.`; }
+  else b.hidden = true;
+  renderHero(); renderTiles(); renderCompare(); renderPred(); renderNews(); renderProgram(); renderTable(); renderSquad(); renderClub();
+}
+
+function renderHero() {
+  const m = nextMatch();
+  if (!m) { $('#a-name').textContent = '—'; $('#stakes').textContent = 'Geen komende wedstrijden gevonden.'; $('#count').innerHTML = ''; return; }
+  const info = (C.matchInfo || {})[dayKey(m.date)] || {};
+  const tHome = isTW(m.home), opp = oppOf(m);
+  [['h', m.home], ['a', m.away]].forEach(([s, t]) => {
+    $('#' + s + '-name').textContent = disp(tmName(t));
+    const r = rowOf(t);
+    $('#' + s + '-pos').textContent = r && m.comp === 'ERE' ? `${r.pos}e · ${r.pts} pt` : '';
+    const c = $('#' + s + '-crest');
+    c.className = 'crest ' + (isTW(t) ? 'twe' : (crestText(t) === 'AJA' ? 'aja' : 'opp'));
+    c.innerHTML = isTW(t) ? 'FCT' : `<span>${esc(crestText(t))}</span>`;
+  });
+  const tbc = m.status === 'SCHEDULED';
+  $('#k-day').textContent = fmt(m.date, {weekday:'long', day:'numeric', month:'short'});
+  $('#k-time').textContent = tbc ? 'n.n.b.' : fmt(m.date, {hour:'2-digit', minute:'2-digit'});
+  $('#k-label').textContent = tbc ? 'Tijd volgt' : 'Aftrap';
+  const ref = m.referee || info.referee;
+  $('#hero-meta').innerHTML = [
+    `<span class="pill solid">${COMP[m.comp] || m.comp}${m.matchday ? ' · speelronde ' + m.matchday : ''}</span>`,
+    `<span class="pill" id="live-pill"><span class="dot"></span><span id="live-txt"></span></span>`,
+    `<span class="pill">${tHome ? 'De Grolsch Veste' : 'Uit bij ' + esc(disp(tmName(opp)))}</span>`,
+    info.tv ? `<span class="pill">${esc(info.tv.split(' (')[0])}</span>` : '',
+    ref ? `<span class="pill">Scheids: ${esc(ref)}</span>` : ''
+  ].join('');
+  let stakes = info.stakes;
+  if (!stakes) {
+    const tw = L.table.find(r => isTW(r)), or = rowOf(opp);
+    if (m.comp === 'ERE' && tw && or) {
+      const d = tw.pts - or.pts, n = disp(tmName(opp)), p = x => x === 1 ? 'punt' : 'punten';
+      stakes = (d < 0 ? `Twente staat ${-d} ${p(-d)} achter ${n}.` : d > 0 ? `Twente staat ${d} ${p(d)} voor op ${n}.` : `Twente en ${n} hebben evenveel punten.`) + ` Twente is ${tw.pos}e, ${n} ${or.pos}e.`;
+    } else stakes = `${COMP[m.comp] || m.comp}${m.info ? ' · ' + m.info : ''}.`;
+  }
+  $('#stakes').textContent = stakes;
+  clearInterval(timer); tick(m); timer = setInterval(() => tick(m), 1000);
+}
+
+function tick(m) {
+  const diff = new Date(m.date) - Date.now(), box = $('#count'), txt = $('#live-txt'), pill = $('#live-pill');
+  if (!txt) return;
+  const live = isLive(m) || (diff <= 0 && diff > -115 * 6e4 && m.status !== 'FINISHED');
+  if (live) {
+    pill.classList.add('live'); txt.textContent = 'Live';
+    const sc = m.score && m.score.h != null ? `<div class="live-score num">${m.score.h} – ${m.score.a}</div>` : '';
+    box.innerHTML = sc + '<p class="count-note">De bal rolt. Tussenstanden komen met vertraging binnen.</p>';
+    return;
+  }
+  pill.classList.remove('live');
+  if (diff <= 0) { txt.textContent = 'Afgelopen'; box.innerHTML = '<p class="count-note">Afgelopen. De uitslag verschijnt bij de volgende verversing.</p>'; return; }
+  const dd = Math.floor(diff / 864e5), h = Math.floor(diff % 864e5 / 3.6e6), mi = Math.floor(diff % 3.6e6 / 6e4), s = Math.floor(diff % 6e4 / 1e3);
+  txt.textContent = dayKey(m.date) === dayKey(Date.now()) ? (diff < 3.6e6 ? 'Bijna aftrap' : 'Vandaag') : dd === 0 ? 'Morgen' : `Over ${dd + (h > 0 ? 1 : 0)} dagen`;
+  const boxes = dd > 0 ? [[dd,'dagen'],[h,'uur'],[mi,'min']] : [[h,'uur'],[mi,'min'],[s,'sec']];
+  box.innerHTML = boxes.map(([v, l]) => `<div class="cbox"><b>${pad(v)}</b><span>${l}</span></div>`).join('');
+}
+
+function renderTiles() {
+  const m = nextMatch(); if (!m) { $('#tiles').innerHTML = ''; return; }
+  const opp = oppOf(m), on = disp(tmName(opp)), lu = lineupFor(m), ab = absentFor(m), notes = oppNotes(m), r = rowOf(opp);
+  const h2h = sameMatch(L.next, m) ? L.h2h : null;
+  const outs = Object.values(C.squad).flat().filter(p => p[3] === 'out').map(p => p[1].split(' ').slice(-1)[0]);
+  const form = played().slice(0, 3).map(x => `${x.score.h}-${x.score.a}`).join(', ');
+  const tiles = [
+    ['opstelling', lu ? 'Verwacht · ' + lu.twente.formation : 'Nog niet bekend', 'Opstelling',
+      lu ? esc(lu.status) : 'De officiële elf verschijnt meestal een uur voor de aftrap op fctwente.nl.', true],
+    ['tegenstander', 'Tegenstander', on,
+      [r ? `${r.pos}e met ${r.pts} punten, ${r.gf}-${r.ga} doelpunten.` : '', notes?.coach ? 'Trainer ' + notes.coach.split(' (')[0] + '.' : ''].join(' ') || 'Info over de tegenstander.'],
+    ['afwezig', 'Blessures', 'Wie ontbreekt', ab ? `Twente mist ${ab.twente.length} spelers, ${on} ${ab.opponent.length} (incl. twijfels).` : (outs.length ? 'Geblesseerd: ' + outs.join(', ') + '.' : 'Geen bekende blessures.')],
+    ['h2h', 'Historie', 'Onderling', h2h && h2h.matches.length ? `Laatste duel: ${tmName(h2h.matches[0].home)} – ${tmName(h2h.matches[0].away)} ${h2h.matches[0].score.h}-${h2h.matches[0].score.a}.` : 'Onderlinge duels verschijnen zodra de bron ze levert.'],
+    ['vorm', 'Laatste duels', 'Vorm', form ? 'Laatste uitslagen: ' + form + '.' : 'Nog geen uitslagen.'],
+    ['info', 'Praktisch', 'Kijken & info', 'Aftrap, tv, scheidsrechter, kaarten en route.']
+  ];
+  $('#tiles').innerHTML = tiles.map(([id, k, t, d, feat]) => `<button class="tile ${feat ? 'feature' : ''}" data-sheet="${id}">
+    <span class="tile-arrow" aria-hidden="true">→</span><span class="tile-k">${esc(k)}</span><span class="tile-t">${esc(t)}</span><span class="tile-d">${d}</span>
+    ${feat && lu ? `<div class="mini-pitch" aria-hidden="true">${lu.twente.players.map(p => `<i style="left:${100 - p[3]}%;top:${p[2]}%"></i>`).join('')}</div>` : ''}</button>`).join('');
+  document.querySelectorAll('[data-sheet]').forEach(el => el.addEventListener('click', () => openSheet(el.dataset.sheet)));
+}
+
+function renderCompare() {
+  const m = nextMatch(), wrap = $('#compare-wrap');
+  const tw = L.table.find(r => isTW(r)), or = m && rowOf(oppOf(m));
+  if (!m || !tw || !or) { wrap.innerHTML = ''; return; }
+  const rows = [['Positie', tw.pos, or.pos, 'low'], ['Punten', tw.pts, or.pts], ['Gescoord', tw.gf, or.gf], ['Tegengoals', tw.ga, or.ga, 'low'], ['Doelsaldo', tw.gd, or.gd]];
+  const w = (v, a, b, low) => { const mx = Math.max(Math.abs(a), Math.abs(b), 1); return low ? Math.max(12, 100 - (Math.abs(v) / (mx * 1.4)) * 100) : Math.max(6, Math.abs(v) / mx * 85); };
+  const f = (l, v) => l === 'Positie' ? v + 'e' : l === 'Doelsaldo' && v > 0 ? '+' + v : v;
+  wrap.innerHTML = `<h2 class="section-label">Duel in cijfers</h2><div class="card compare">
+    <div class="cmp-head"><span style="color:var(--red)">Twente</span><span></span><span>${esc(disp(tmName(oppOf(m))))}</span></div>
+    ${rows.map(([l, a, b, low]) => `<div class="cmp-row num"><span class="l">${f(l, a)}</span><div class="bar left"><b style="width:${w(a, a, b, low)}%"></b></div><span class="cmp-label">${l}</span><div class="bar right"><b style="width:${w(b, a, b, low)}%"></b></div><span class="r">${f(l, b)}</span></div>`).join('')}</div>`;
+}
+
+let pred = {h: 2, a: 1}, predKey = '';
+function renderPred() {
+  const m = nextMatch(); if (!m) return;
+  const key = 'tw-pred-' + dayKey(m.date);
+  if (key !== predKey) { predKey = key; pred = store.get(key, isTW(m.home) ? {h: 2, a: 1} : {h: 1, a: 2}); }
+  $('#p-h').textContent = pred.h; $('#p-a').textContent = pred.a;
+  const us = isTW(m.home) ? pred.h : pred.a, them = isTW(m.home) ? pred.a : pred.h, on = disp(tmName(oppOf(m)));
+  const t = us > them ? `<b>Twente wint ${pred.h}-${pred.a}.</b>` : us === them ? `<b>Gelijkspel, ${pred.h}-${pred.a}.</b>` : `<b>${esc(on)} wint ${pred.h}-${pred.a}.</b>`;
+  $('#pred-txt').innerHTML = t + ' Je voorspelling blijft bewaard op dit apparaat.';
+}
+document.querySelectorAll('[data-p]').forEach(b => b.addEventListener('click', () => {
+  const k = b.dataset.p; pred[k] = Math.max(0, Math.min(15, pred[k] + Number(b.dataset.d))); store.set(predKey, pred); renderPred();
+}));
+
+function ago(d) {
+  if (!d) return '';
+  const m = Math.round((Date.now() - new Date(d)) / 6e4);
+  if (m < 60) return m <= 1 ? 'zojuist' : m + ' min geleden';
+  const h = Math.round(m / 60); if (h < 24) return h + ' uur geleden';
+  return fmt(d, {day:'numeric', month:'short'});
+}
+function renderNews() {
+  const items = L.news || [];
+  const counts = {}; items.forEach(n => counts[n.source] = (counts[n.source] || 0) + 1);
+  const srcs = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(x => x[0]).filter(Boolean);
+  if (nf !== 'Alles' && !srcs.includes(nf)) nf = 'Alles';
+  $('#filters').innerHTML = ['Alles', ...srcs].map(f => `<button class="chip" aria-pressed="${f === nf}" data-f="${esc(f)}">${esc(f)}</button>`).join('');
+  document.querySelectorAll('#filters .chip').forEach(c => c.addEventListener('click', () => { nf = c.dataset.f; renderNews(); }));
+  const list = items.filter(n => nf === 'Alles' || n.source === nf);
+  $('#news').innerHTML = list.length ? list.map((n, i) => `<a class="card news ${i === 0 && nf === 'Alles' ? 'lead' : ''}" href="${esc(n.url)}" target="_blank" rel="noopener">
+    <div class="news-top"><span class="tag">${esc(n.source || 'Nieuws')}</span><span>${ago(n.date)}</span></div>
+    <h3>${esc(n.title)}</h3>${n.summary ? `<p>${esc(n.summary)}</p>` : ''}<span class="news-src">Lees het artikel ↗</span></a>`).join('')
+    : '<p class="note">Er is op dit moment geen nieuws gevonden.</p>';
+}
+
+function fxRow(m, isNext) {
+  const tbc = m.status === 'SCHEDULED', r = result(m);
+  return `<div class="card row ${isNext ? 'next' : ''}">
+    <div class="date-box"><b class="num">${fmt(m.date, {day:'numeric'})}</b><span>${fmt(m.date, {month:'short'}).replace('.', '')}</span></div>
+    <div><div class="fx-teams">${teamLine(esc(tmName(m.home)) + ' – ' + esc(tmName(m.away)))}</div>
+    <div class="fx-meta"><span class="comp ${m.comp}">${COMP[m.comp] || m.comp}</span><span>${fmt(m.date, {weekday:'long'})}${m.info ? ' · ' + esc(m.info) : ''}</span></div></div>
+    ${m.status === 'FINISHED' ? `<div class="score ${r} num">${m.score.h}-${m.score.a}</div>` : isLive(m) ? `<div class="score G num">${m.score.h ?? 0}-${m.score.a ?? 0}</div>` : `<div class="kick num">${tbc ? '<span class="tbc">tijd*</span>' : fmt(m.date, {hour:'2-digit', minute:'2-digit'})}</div>`}</div>`;
+}
+function renderProgram() {
+  const up = upcoming();
+  $('#upcoming').innerHTML = up.slice(0, 12).map((m, i) => fxRow(m, i === 0)).join('') || '<p class="note">Geen komende wedstrijden.</p>';
+  $('#played').innerHTML = played().slice(0, 10).map(m => fxRow(m)).join('');
+}
+
+function zone(p) { if (p <= 2) return 'var(--red)'; if (p <= 7) return '#2E7D5B'; if (p === 16) return 'var(--draw)'; if (p >= 17) return '#555'; return 'transparent'; }
+function renderTable() {
+  const m = nextMatch(), opp = m && m.comp === 'ERE' ? rowOf(oppOf(m)) : null;
+  const tw = L.table.find(r => isTW(r));
+  const fewest = Math.min(...L.table.map(r => r.ga));
+  $('#stand-sub').textContent = `Eredivisie${L.matchday ? ', huidige speelronde ' + L.matchday : ''}.` + (tw && tw.ga === fewest ? ' Twente heeft de beste verdediging van de competitie.' : '');
+  $('#table').innerHTML = L.table.map(r => `<tr class="${isTW(r) ? 'us' : ''} ${opp && r === opp ? 'opp' : ''}"><td class="pos" style="--z:${zone(r.pos)}">${r.pos}</td><td>${esc(disp(r.short || r.name))}</td><td>${r.played}</td><td class="hide-s">${r.won}</td><td class="hide-s">${r.draw}</td><td class="hide-s">${r.lost}</td><td>${r.gf}-${r.ga}</td><td>${r.gd > 0 ? '+' : ''}${r.gd}</td><td class="pts">${r.pts}</td></tr>`).join('');
+  $('#scorers').innerHTML = (L.scorers || []).slice(0, 10).map(s => `<li class="${s.twente ? 'us' : ''}"><span><b>${esc(s.name)}</b><small>${esc(disp(s.team))}</small></span><b class="num">${s.goals}</b></li>`).join('') || '<li>Nog geen gegevens.</li>';
+  const e = C.europe;
+  $('#europe').innerHTML = e ? `<div class="card stat"><b class="num">${e.points}</b><span>punten uit ${e.played} duels</span><small>${esc(e.line)}</small></div>
+    <div class="card stat"><b class="num">${esc(e.goals)}</b><span>doelsaldo</span><small>Handmatig bijgehouden in content.json</small></div>
+    <div class="card stat"><b class="num" style="font-size:34px">${esc(e.next.split(' ')[0])}</b><span>Volgende</span><small>${esc(e.next.split(' ').slice(1).join(' '))}</small></div>` : '';
+}
+
+function renderSquad() {
+  const lu = lineupFor(nextMatch());
+  const xi = new Set(lu ? lu.twente.players.map(p => p[0]) : []);
+  const tws = (L.scorers || []).filter(s => s.twente).sort((a, b) => b.goals - a.goals)[0];
+  const tw = L.table.find(r => isTW(r)), fewest = Math.min(...L.table.map(r => r.ga));
+  const tiles = [];
+  if (tws) tiles.push([tws.goals, tws.name, 'Competitiegoals' + ((L.scorers[0] || {}).goals === tws.goals ? ', (gedeeld) topscorer van de Eredivisie' : '')]);
+  (C.highlights || []).forEach(h => tiles.push(h));
+  if (tw) tiles.push([tw.ga, 'Tegengoals', tw.ga === fewest ? `Minste van de Eredivisie na ${tw.played} duels` : `In ${tw.played} competitieduels`]);
+  $('#sel-stats').innerHTML = tiles.map(([b, s, sm]) => `<div class="card stat"><b class="num">${esc(b)}</b><span>${esc(s)}</span><small>${esc(sm)}</small></div>`).join('');
+  $('#squad').innerHTML = Object.entries(C.squad).map(([grp, pl]) => `<h2 class="section-label">${grp}</h2>
+    <div class="squad">${pl.map(([n, name, meta, st]) => `<div class="card player ${st === 'out' ? 'out' : ''} ${xi.has(n) ? 'xi' : ''}">
+      <div class="shirt num">${n}</div><div><div class="p-name">${esc(name)}</div><div class="p-meta">${esc(meta)}${xi.has(n) ? ' · verwacht in de basis' : ''}</div></div>
+      ${st === 'out' ? '<span class="inj">Geblesseerd</span>' : '<span></span>'}</div>`).join('')}</div>`).join('');
+}
+
+function renderClub() {
+  $('#honours').innerHTML = C.honours.map(([b, t, s]) => `<div class="honour"><b>${esc(b)}</b><div>${esc(t)}<small>${esc(s)}</small></div></div>`).join('');
+  $('#clubkv').innerHTML = C.club.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+  $('#facts').innerHTML = C.facts.map(f => `<li><span>${esc(f)}</span></li>`).join('');
+  $('#women').textContent = C.women || '';
+}
+
+/* ---------- sheets ---------- */
+function pitchHTML(x, opp) {
+  return `<div class="pitch ${opp ? 'aja' : ''}"><svg class="lines" viewBox="0 0 68 88" preserveAspectRatio="none" fill="none" stroke="rgba(255,255,255,.55)" stroke-width=".4">
+    <rect x="2" y="2" width="64" height="84"/><line x1="2" y1="44" x2="66" y2="44"/><circle cx="34" cy="44" r="7"/>
+    <rect x="16" y="2" width="36" height="13"/><rect x="25" y="2" width="18" height="5"/><rect x="16" y="73" width="36" height="13"/><rect x="25" y="81" width="18" height="5"/></svg>
+    ${x.players.map(([n, name, l, t]) => `<div class="pl" style="left:${l}%;top:${t}%"><i>${esc(n)}</i><span>${esc(name)}</span></div>`).join('')}</div>`;
+}
+function formList(arr, perspective) {
+  return `<div class="list">${arr.map(m => {
+    let r = '';
+    if (m.score && m.score.h != null) {
+      const home = perspective ? norm(tmName(m.home)) === norm(perspective) : isTW(m.home);
+      const us = home ? m.score.h : m.score.a, them = home ? m.score.a : m.score.h;
+      r = us > them ? 'W' : us === them ? 'G' : 'V';
+    }
+    return `<div class="card row"><div class="date-box"><b class="num">${fmt(m.date, {day:'numeric'})}</b><span>${fmt(m.date, {month:'short'}).replace('.', '')}</span></div>
+      <div><div class="fx-teams">${teamLine(esc(tmName(m.home)) + ' – ' + esc(tmName(m.away)))}</div><div class="fx-meta">${m.comp ? `<span class="comp ${m.comp}">${COMP[m.comp] || m.comp}</span>` : ''}<span>${fmt(m.date, {year:'numeric'})}</span></div></div>
+      <div class="score ${r} num">${m.score.h}-${m.score.a}</div></div>`;
+  }).join('')}</div>`;
+}
+const SHEETS = {
+  opstelling: m => {
+    const lu = lineupFor(m), on = disp(tmName(oppOf(m)));
+    if (!lu) return {t: 'Opstelling', s: 'Nog niet bekend', body: `<p class="note">De opstelling voor ${esc(disp(tmName(m.home)))} – ${esc(disp(tmName(m.away)))} is nog niet bekend. Officiële opstellingen verschijnen meestal een uur voor de aftrap op <a class="lnk" href="https://fctwente.nl">fctwente.nl</a>.</p>`};
+    return {t: 'Opstelling', s: lu.status, body: `
+      <div class="formation"><div class="seg" role="group" aria-label="Kies team"><button aria-pressed="true" data-team="twente">FC Twente</button><button aria-pressed="false" data-team="opponent">${esc(on)}</button></div><b id="fm">${lu.twente.formation}</b></div>
+      <div id="pitch-slot">${pitchHTML(lu.twente)}</div><p class="note" id="xi-note">${esc(lu.twente.note || '')}</p>`,
+      after: () => document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+        const x = lu[b.dataset.team]; $('#pitch-slot').innerHTML = pitchHTML(x, b.dataset.team !== 'twente'); $('#fm').textContent = x.formation; $('#xi-note').textContent = x.note || '';
+      }))};
+  },
+  tegenstander: m => {
+    const opp = oppOf(m), on = disp(tmName(opp)), r = rowOf(opp), notes = oppNotes(m) || {};
+    const recent = sameMatch(L.next, m) && L.opponent ? (L.opponent.recent || []) : [];
+    return {t: on, s: 'Tegenstander van de volgende wedstrijd', body: `
+      ${r ? `<div class="stats"><div class="card stat"><b class="num">${r.pos}e</b><span>${r.pts} punten</span><small>In de Eredivisie</small></div>
+        <div class="card stat"><b class="num">${r.gf}</b><span>Goals gemaakt</span><small>${r.ga} tegen, doelsaldo ${r.gd > 0 ? '+' : ''}${r.gd}</small></div>
+        <div class="card stat"><b class="num">${r.won}-${r.draw}-${r.lost}</b><span>W-G-V</span><small>Na ${r.played} duels</small></div></div>` : ''}
+      ${Object.keys(notes).length ? `<div class="card prose">${notes.coach ? `<p><b>Trainer:</b> ${esc(notes.coach)}</p>` : ''}${notes.style ? `<p><b>Kenmerk:</b> ${esc(notes.style)}</p>` : ''}${notes.danger ? `<p><b>Gevaarlijkste man:</b> ${esc(notes.danger)}</p>` : ''}${notes.link ? `<p><b>Oude bekende:</b> ${esc(notes.link)}</p>` : ''}</div>` : ''}
+      ${recent.length ? `<h3 class="section-label" style="margin:4px 0 0">Laatste duels ${esc(on)}</h3>${formList(recent, tmName(opp))}` : ''}
+      ${!r && !recent.length && !Object.keys(notes).length ? '<p class="note">Over deze tegenstander is nog geen informatie beschikbaar.</p>' : ''}`};
+  },
+  afwezig: m => {
+    const ab = absentFor(m), on = disp(tmName(oppOf(m)));
+    const outs = Object.values(C.squad).flat().filter(p => p[3] === 'out');
+    const tw = ab ? ab.twente : outs.map(p => [p[1], 'Geblesseerd']);
+    const row = ([n, s]) => `<div class="card"><span><b>${esc(n)}</b></span><em class="${/twijfel/i.test(s) ? 'd' : 'o'}">${esc(s)}</em></div>`;
+    return {t: 'Wie ontbreekt', s: 'Blessures en twijfelgevallen', body: `
+      <h3 class="section-label" style="margin:0">FC Twente</h3><div class="absent">${tw.map(row).join('') || '<p class="note">Geen bekende afwezigen.</p>'}</div>
+      ${ab ? `<h3 class="section-label" style="margin:4px 0 0">${esc(on)}</h3><div class="absent">${ab.opponent.map(row).join('')}</div>` : ''}
+      ${ab && ab.note ? `<p class="note">${esc(ab.note)}</p>` : '<p class="note">Afwezigen worden handmatig bijgehouden in content.json.</p>'}`};
+  },
+  h2h: m => {
+    const h = sameMatch(L.next, m) ? L.h2h : null, on = disp(tmName(oppOf(m)));
+    if (!h || !h.matches.length) return {t: 'Onderling', s: 'FC Twente tegen ' + on, body: '<p class="note">De bron heeft (nog) geen onderlinge duels voor deze wedstrijd.</p>'};
+    return {t: 'Onderling', s: 'FC Twente tegen ' + on, body: `
+      ${h.twenteWins != null ? `<div class="stats"><div class="card stat"><b class="num">${h.twenteWins}</b><span>Twente-zeges</span><small>In ${h.count} bekende duels</small></div>
+      <div class="card stat"><b class="num">${h.draws}</b><span>Gelijk</span><small>&nbsp;</small></div><div class="card stat"><b class="num">${h.oppWins}</b><span>Zeges ${esc(on)}</span><small>&nbsp;</small></div></div>` : ''}
+      <h3 class="section-label" style="margin:4px 0 0">Laatste duels</h3>${formList(h.matches)}`};
+  },
+  vorm: () => {
+    const p = played().slice(0, 7);
+    const ere = played().filter(x => x.comp === 'ERE').slice(0, 5).reverse();
+    return {t: 'Vorm', s: 'Laatste duels FC Twente', body: `
+      <div class="card prose" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><b>Laatste ${ere.length} in de Eredivisie <small style="color:var(--muted);font-weight:500">(oud → nieuw)</small></b><div class="form">${ere.map(x => `<span class="fchip ${result(x)}">${result(x)}</span>`).join('')}</div></div>
+      ${formList(p)}`};
+  },
+  info: m => {
+    const info = (C.matchInfo || {})[dayKey(m.date)] || {}, tbc = m.status === 'SCHEDULED';
+    return {t: 'Kijken & info', s: disp(tmName(m.home)) + ' – ' + disp(tmName(m.away)), body: `
+      <dl class="card kv"><dt>Aftrap</dt><dd>${fmt(m.date, {weekday:'long', day:'numeric', month:'long'})}${tbc ? ', tijd volgt' : ', ' + fmt(m.date, {hour:'2-digit', minute:'2-digit'})}</dd>
+      <dt>Stadion</dt><dd>${isTW(m.home) ? 'De Grolsch Veste, Enschede' : 'Uitwedstrijd bij ' + esc(disp(tmName(m.home)))}</dd>
+      <dt>Competitie</dt><dd>${COMP[m.comp] || m.comp}${m.matchday ? ', speelronde ' + m.matchday : ''}</dd>
+      ${(m.referee || info.referee) ? `<dt>Scheidsrechter</dt><dd>${esc(m.referee || info.referee)}</dd>` : ''}
+      ${info.tv ? `<dt>Tv</dt><dd>${esc(info.tv)}</dd>` : ''}</dl>
+      <p class="note">Kaarten, route en parkeren: <a class="lnk" href="https://kaartverkoop.fctwente.nl">kaartverkoop.fctwente.nl</a> en <a class="lnk" href="https://fctwente.nl">fctwente.nl</a>.</p>`};
+  }
+};
+let lastFocus = null;
+function openSheet(id) {
+  const m = nextMatch(); if (!m || !SHEETS[id]) return;
+  const s = SHEETS[id](m); lastFocus = document.activeElement;
+  $('#sheet-title').innerHTML = esc(s.t) + `<small>${esc(s.s)}</small>`;
+  $('#sheet-body').innerHTML = s.body;
+  $('#sheet').classList.add('on'); $('#scrim').classList.add('on'); $('#sheet').scrollTop = 0;
+  s.after && s.after(); $('#sheet-x').focus();
+}
+function closeSheet() { $('#sheet').classList.remove('on'); $('#scrim').classList.remove('on'); lastFocus && lastFocus.focus && lastFocus.focus(); }
+$('#sheet-x').addEventListener('click', closeSheet);
+$('#scrim').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#sheet').classList.contains('on')) closeSheet(); });
+
+/* ---------- tabs & verversen ---------- */
+const VIEWS = ['wedstrijd','nieuws','programma','stand','selectie','club'];
+function show(v) { if (!VIEWS.includes(v)) v = 'wedstrijd'; VIEWS.forEach(x => { $('#view-' + x).classList.toggle('on', x === v); $('#tab-' + x).setAttribute('aria-selected', x === v); }); }
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => { const v = b.dataset.view; if (location.hash !== '#' + v) location.hash = v; else show(v); window.scrollTo({top: 0}); }));
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+$('#refresh').addEventListener('click', () => { $('#updated').textContent = 'laden…'; load(); });
+setInterval(load, REFRESH_MS);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastLoad > REFRESH_MS) load(); });
+show(location.hash.slice(1) || 'wedstrijd');
+load();
+</script>
+</body>
+</html>
